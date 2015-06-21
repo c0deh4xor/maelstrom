@@ -9,7 +9,7 @@ clear
 echo -e "\e[93m  MAELSTROM\e[0m"
 echo
 echo -e "\e[4mChose your flavor:\e[24m"
-echo "--------------------------------"
+echo
 echo -e "\e[34m1. Perform maelstrom\e[0m"
 echo "--------------------------------"
 echo "2. Perform accespoint-soft "

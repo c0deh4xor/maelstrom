@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo -e "\e[93mFetch & Pull (git)\e[0m"
-git fetch --all
+echo -e "\e[93mStash & Pull (git)\e[0m"
+git stash
 git pull
-echo

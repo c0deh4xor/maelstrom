@@ -6,13 +6,13 @@
 
 f_interface(){
 clear
-echo -e "\e[93mMaelström\e[0m"
+echo -e "\e[93mMAELSTROM\e[0m"
 echo
 echo -e "\e[4mChose your flavor:\e[24m"
 echo
-echo -e "\e[34mRun maelstrom first!\e[0m"
+
 echo
-echo "1. Perform maelstrom "
+echo -e "\e[34m1.Perform maelstrom\e[0m"
 echo "--- - --- - --- - ---"
 echo "2. Perform accespoint-soft "
 echo "3. Perform accespoint-ssl "
@@ -26,7 +26,6 @@ echo "8. Perform tails sslstrip "
 echo "9. Perform tails Captive Portal "
 
 echo
-echo -e "\e[34mDon't forget to use tails.sh\e[0m"
 echo
 read -p "Choice: " interfacechoice
 echo

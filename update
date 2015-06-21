@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo -e "\e[93mUpdate the script\e[0m"
+git pull https://github.com/Armaal/maelstrom/
+

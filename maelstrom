@@ -10,17 +10,15 @@ echo -e "\e[93mMAELSTROM\e[0m"
 echo
 echo -e "\e[4mChose your flavor:\e[24m"
 echo
-
-echo
-echo -e "\e[34m1.Perform maelstrom\e[0m"
-echo "--- - --- - --- - ---"
+echo -e "\e[34m1. Perform maelstrom\e[0m"
+echo "--------------------------------"
 echo "2. Perform accespoint-soft "
 echo "3. Perform accespoint-ssl "
 echo "4. Perform accespoint-captive-portal  "
-echo "--- - --- - --- - ---"
+echo "--------------------------------"
 echo "5. Perform urlsnarf  "
 echo "6. Perform driftnet "
-echo "--- - --- - --- - ---"
+echo "--------------------------------"
 echo "7. Perform tails dhcp "
 echo "8. Perform tails sslstrip "
 echo "9. Perform tails Captive Portal "

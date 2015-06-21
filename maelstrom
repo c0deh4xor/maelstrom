@@ -7,12 +7,13 @@
 f_interface(){
 clear
 echo "Maelstrom";
-
+echo
 echo -e "\e[93mAutomated scripties\e[0m"
 echo -e "\e[4mChose your flavor:\e[24m"
-echo -e "\e[34mRun EvilAP [1] in first!\e[0m"
 echo
-echo "1. Perform EvilAP "
+echo -e "\e[34mRun maelstrom first!\e[0m"
+echo
+echo "1. Perform maelstrom "
 echo "--- - --- - --- - ---"
 echo "2. Perform accespoint-soft "
 echo "3. Perform accespoint-ssl "

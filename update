@@ -3,3 +3,5 @@
 echo -e "\e[93mFetch & Pull (git)\e[0m"
 git fetch --all
 git pull
+echo
+echo

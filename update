@@ -2,4 +2,4 @@
 
 echo -e "\e[93mhard update\e[0m"
 git fetch --all
-git reset --hard origin/master
+git pull

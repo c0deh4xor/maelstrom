@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#author : Armaal
+#author : armaal
 #year : 2015
-#info : wifi vector attack for kali nethunter
+#info : wifi attack vectors for nethunter (kali linux 1.1.0a)
 
 f_interface(){
 clear

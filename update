@@ -1,31 +1,5 @@
 #!/bin/bash
 
-  cd "${gitpath}/"
-
-  # Make sure a git repo is init before updating
-  if [[ "$( git rev-parse --is-inside-work-tree )" != "true" ]]; then
-    if [[ "$( ls )" = "" ]]; then
-      # If directory is empty, just clone
-      git clone "${gitremote}" .
-    else
-      # If not empty, init and add remote
-      git init > /dev/null
-      git remote add origin "${gitremote}"
-    fi
-  fi
-
-  # Make sure to prep checkout first
-  git checkout -- .
-
-  # Update from git
-  git pull origin master
-
-  # If conflicts, clean and try again
-  if [[ "$?" -ne 0 ]]; then
-    git clean -d -fx ""
-    git pull origin master
-  fi
-
-  echo "Update finished."
-  exit 6
-fi
+echo -e "\e[93mStash & Pull (git)\e[0m"
+git stash
+git pull

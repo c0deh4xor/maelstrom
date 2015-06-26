@@ -56,15 +56,6 @@ screen -wipe #remove dead screen
 
 sleep 2s
 
-echo -e "\e[35mChange your mac adress on at0\e[0m"
-ifconfig at0 down
-macchanger -r at0
-
-echo -e "\e[35mYour new local mac adress on at0:\e[0m"
-hn=`ifconfig at0 |grep HWaddr |awk '{print$5}' |awk -F":" '{print$1$2$3$4$5$6}'`
-hostname $hn
-echo $hn
-
 airmon-ng stop wlan1mon
 sleep 2s
 airmon-ng start wlan1 #turn wlan1 into monitor mod
@@ -82,7 +73,7 @@ clear
 echo
 echo -e "\e[96mGNU screen session created --> karma\e[0m"
 echo -e "\e[96mscreen -x karma to enter into the screen session\e[0m"
-sleep 5s
+sleep 1s
 screen -dmS karma airbase-ng -P -C 60 -y -e $essid -c $channel -v wlan1mon 
 }
 
@@ -98,7 +89,19 @@ iptables --table nat --delete-chain
 ifconfig at0 up
 ifconfig at0 192.168.7.1 netmask 255.255.255.0
 route add -net 192.168.7.0 netmask 255.255.255.0 gw 192.168.7.1
-pkill dhcpd
+pkill dhcpd #kill previous dhcp daemon
+
+#change mac address on at0
+echo -e "\e[35mChange your mac adress on at0\e[0m"
+ifconfig at0 down
+macchanger -r at0
+
+echo -e "\e[35mYour new local mac adress on at0:\e[0m"
+hn=`ifconfig at0 |grep HWaddr |awk '{print$5}' |awk -F":" '{print$1$2$3$4$5$6}'`
+hostname $hn
+echo $hn
+
+#start the dhcp server
 /etc/init.d/isc-dhcp-server start
 
 #active router mod and configure some iptable

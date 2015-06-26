@@ -111,6 +111,17 @@ pkill dhcpd #kill previous dhcp daemon
 echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE
 iptables --append FORWARD --in-interface at0 -j ACCEPT
+echo
+echo -e " \e[44mYou are now watching the DHCP lease movements \e[0m"
+echo -e " \e[44mYou can exit at any moments this screen without break the fakeAP (ctrl+c to exit) \e[0m"
+echo -e " \e[44m(ctrl+c to exit)\e[0m"
+echo
+echo
+#cleanning any pre-existing dhcp lease
+echo > /var/lib/dhcp/dhcpd.leases
+cat /dev/null > /tmp/dhcpd.conf
+sleep 1s
+tail -f /var/lib/dhcp/dhcpd.leases 2> /dev/null | grep --color -E "lease|hardware|client"
 
 }
 

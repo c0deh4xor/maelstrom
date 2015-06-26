@@ -1,8 +1,9 @@
 #!/bin/bash
 
-#	Written by : Armaal
-#	Year : 2015
-#	Info : wifi attack vectors for nethunter (kali linux 1.1.0a)
+#	author : armaal
+#	written in : bash
+#	date : june 2015
+#	info : wifi attack vectors for nethunter (kali linux 1.1.0a)
 
 f_interface(){
 

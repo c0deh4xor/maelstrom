@@ -197,7 +197,7 @@ echo
 f_urlsnarf(){
 
    echo -e "\e[93mLogs saved to /sdcard/capture/urlsnarf/\e[0m"
-   urlsnarf -i at0 >> /sdcard/capture/urlsnarf/urlsnarf_$(date +%F-%H%M).log
+   urlsnarf -i at0 | awk {'print $1 $7'} | sed 's,http://, ,' | sed 's/.lan//' | sed 's%/.*$%%' | uniq >> /sdcard/capture/urlsnarf/urlsnarf_$(date +%F-%H%M).log
 }
 
 #tail captive portal

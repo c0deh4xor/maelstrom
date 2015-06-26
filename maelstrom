@@ -53,10 +53,12 @@ f_evilap(){
 echo "kill all previous screen sessions" 
 pkill -15 screen #kill all previous screen sessions
 screen -wipe #if dead screen?
-ifconfig at0 up #down previous at0
+ifconfig at0 down #down previous at0
 airmon-ng stop wlan1mon #stop previous monitor mod
 sleep 2s
 airmon-ng start wlan1 #turn wlan1 into monitor mod (wlan1mon)
+sleep 2s
+ifconfig wlan1mon down
 sleep 2s
 
 #change mac address on at0
@@ -65,8 +67,12 @@ macchanger -r wlan1mon
 
 echo -e "\e[35mYour new local mac adress on at0:\e[0m"
 hn=`ifconfig wlan1mon |grep HWaddr |awk '{print$5}' |awk -F":" '{print$1$2$3$4$5$6}'`
-hostname $hn
+echo
 echo $hn
+echo
+ifconfig wlan1mon up
+
+clear
 
 #airbase-ng
 echo -e "\e[96mYour fake AP will respond to all probe request around you\e[0m"

@@ -49,7 +49,12 @@ echo
 clear
 echo
 f_evilap(){
-	
+
+#kill all previous screen sessions
+echo "kill all previous screen sessions"
+pkill -15 screen
+sleep 2s
+
 echo -e "\e[35mChange your mac adress on at0\e[0m"
 ifconfig at0 down
 macchanger -r at0

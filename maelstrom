@@ -63,14 +63,11 @@ ifconfig wlan1mon down
 sleep 2s
 
 #change mac address on at0
-echo -e "\e[35mChange your mac adress on at0\e[0m"
+echo -e "\e[93mchanging your mac adress to be more discreet\e[0m"
 macchanger -r wlan1mon
-
-echo -e "\e[35mYour new local mac adress on at0:\e[0m"
+echo -e "\e[93myour new mac adress:\e[0m"
 hn=`ifconfig wlan1mon |grep HWaddr |awk '{print$5}' |awk -F":" '{print$1$2$3$4$5$6}'`
-echo
 echo $hn
-echo
 sleep 4s
 ifconfig wlan1mon up
 
@@ -78,7 +75,7 @@ clear
 
 #airbase-ng
 echo -e "\e[96mYour fake AP will respond to all probe request around you\e[0m"
-echo "----------------------------------------"
+echo "---------------------------------------------------------------"
 echo -e "\e[93mChose the fakeAP channel [1-13]\e[0m"
 echo -e "\e[93mChose the fakeAP name\e[0m"
 echo

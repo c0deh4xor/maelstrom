@@ -9,11 +9,11 @@ f_interface(){
 
 clear
 
-echo -e "\e[93mMAELSTROM\e[0m"
+echo -e "\e[93mMAELSTROM V1.0\e[0m"
 echo
 echo  "Chose Your Flavor [1-9]: "
 echo
-echo -e "Default \e[96m1. Perform FakeAP\e[0m"
+echo -e "\e[96m1. Perform FakeAP\e[0m"
 echo "--------------------------------"
 echo "2. Option accespoint-soft "
 echo "3. Option accespoint-ssl "

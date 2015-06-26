@@ -70,6 +70,7 @@ hn=`ifconfig wlan1mon |grep HWaddr |awk '{print$5}' |awk -F":" '{print$1$2$3$4$5
 echo
 echo $hn
 echo
+sleep 4s
 ifconfig wlan1mon up
 
 clear

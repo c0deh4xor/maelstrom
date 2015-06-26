@@ -128,6 +128,7 @@ echo -e "\e[34mLogs saved to /sdcard/capture/ssl/\e[0m"
 logfile=/sdcard/capture/ssl/sslstrip_$(date +%F-%H%M).log
 echo
 echo -e "\e[35m*When you have finish the sslstrip (ctrl-C to escape)\e[0m"
+}
 
 #option acces-point captive portal
 f_accespoint-dnspoof-captive(){

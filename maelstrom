@@ -50,9 +50,10 @@ clear
 echo
 f_evilap(){
 
-#kill all previous screen sessions
-echo "kill all previous screen sessions"
-pkill -15 screen
+echo "kill all previous screen sessions" 
+pkill -15 screen #kill all previous screen sessions
+screen -wipe #remove dead screen
+
 sleep 2s
 
 echo -e "\e[35mChange your mac adress on at0\e[0m"
@@ -66,8 +67,7 @@ echo $hn
 
 airmon-ng stop wlan1mon
 sleep 2s
-#turn wlan1 into monitor mod
-airmon-ng start wlan1
+airmon-ng start wlan1 #turn wlan1 into monitor mod
 clear
 
 #airbase-ng

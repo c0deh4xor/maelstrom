@@ -140,7 +140,7 @@ logfile=/sdcard/capture/ssl/sslstrip_$(date +%F-%H%M).log
 echo
 echo -e "\e[35m*When you have finish the sslstrip (ctrl-C to escape)\e[0m"
 echo -e "\e[35m*You will be able to see the result in this terminal\e[0m"
-sslstrip.py -pfk -l 8888 -w $logfile
+sslstrip -pfk -l 8888 -w $logfile
 sleep 7s
 echo -e "\e[96mLook at the results :\e[0m"
 echo

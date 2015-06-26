@@ -93,13 +93,13 @@ pkill dhcpd #kill previous dhcp daemon
 
 #change mac address on at0
 echo -e "\e[35mChange your mac adress on at0\e[0m"
-ifconfig at0 down
 macchanger -r at0
 
 echo -e "\e[35mYour new local mac adress on at0:\e[0m"
 hn=`ifconfig at0 |grep HWaddr |awk '{print$5}' |awk -F":" '{print$1$2$3$4$5$6}'`
 hostname $hn
 echo $hn
+sleep 3s
 
 #start the dhcp server
 /etc/init.d/isc-dhcp-server start

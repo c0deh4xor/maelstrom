@@ -13,7 +13,7 @@ echo -e "\e[93mMAELSTROM\e[0m"
 echo
 echo  "Chose your flavor : "
 echo
-echo -e "Normal \e[5mPerform maelstrom \e[25mNormal"
+echo -e "\033[31m 1. Launch me first / maelstrom / \033[0m"
 echo "--------------------------------"
 echo "2. Perform accespoint-soft "
 echo "3. Perform accespoint-ssl "
